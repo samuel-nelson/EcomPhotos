@@ -30,11 +30,25 @@ export async function POST(request: NextRequest) {
       position: position || undefined,
     });
 
+    console.log('PhotoRoom result:', {
+      hasResultUrl: !!result.result_url,
+      hasResultB64: !!result.result_b64,
+      hasJobId: !!result.job_id,
+      status: result.status,
+    });
+
     return NextResponse.json(result);
   } catch (error: any) {
-    console.error('PhotoRoom background removal error:', error);
+    console.error('PhotoRoom background removal error:', {
+      message: error.message,
+      status: error.status,
+      error: error,
+    });
     return NextResponse.json(
-      { error: error.message || 'Failed to remove background' },
+      { 
+        error: error.message || 'Failed to remove background',
+        details: process.env.NODE_ENV === 'development' ? error : undefined
+      },
       { status: error.status || 500 }
     );
   }
