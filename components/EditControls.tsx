@@ -193,66 +193,55 @@ export function EditControls({ editState, onEditChange, onCrop, onReset }: EditC
           </TabsContent>
 
           <TabsContent value="advanced" className="space-y-4">
-            <div className="space-y-2">
+            <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium">White Balance</label>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEditChange({ whiteBalance: editState.whiteBalance ? undefined : { temperature: 0, tint: 0 } })}
-                >
-                  {editState.whiteBalance ? 'Hide' : 'Show'}
-                </Button>
               </div>
-              {editState.whiteBalance && (
-                <>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-sm font-medium">Temperature</label>
-                      <span className="text-sm text-muted-foreground">
-                        {editState.whiteBalance.temperature}
-                      </span>
-                    </div>
-                    <Slider
-                      value={[editState.whiteBalance.temperature]}
-                      onValueChange={([value]) =>
-                        onEditChange({
-                          whiteBalance: {
-                            ...editState.whiteBalance!,
-                            temperature: value,
-                          },
-                        })
-                      }
-                      min={-100}
-                      max={100}
-                      step={1}
-                    />
-                  </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium">Temperature</label>
+                  <span className="text-sm text-muted-foreground">
+                    {editState.whiteBalance?.temperature ?? 0}
+                  </span>
+                </div>
+                <Slider
+                  value={[editState.whiteBalance?.temperature ?? 0]}
+                  onValueChange={([value]) =>
+                    onEditChange({
+                      whiteBalance: {
+                        temperature: value,
+                        tint: editState.whiteBalance?.tint ?? 0,
+                      },
+                    })
+                  }
+                  min={-100}
+                  max={100}
+                  step={1}
+                />
+              </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-sm font-medium">Tint</label>
-                      <span className="text-sm text-muted-foreground">
-                        {editState.whiteBalance.tint}
-                      </span>
-                    </div>
-                    <Slider
-                      value={[editState.whiteBalance.tint]}
-                      onValueChange={([value]) =>
-                        onEditChange({
-                          whiteBalance: {
-                            ...editState.whiteBalance!,
-                            tint: value,
-                          },
-                        })
-                      }
-                      min={-100}
-                      max={100}
-                      step={1}
-                    />
-                  </div>
-                </>
-              )}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium">Tint</label>
+                  <span className="text-sm text-muted-foreground">
+                    {editState.whiteBalance?.tint ?? 0}
+                  </span>
+                </div>
+                <Slider
+                  value={[editState.whiteBalance?.tint ?? 0]}
+                  onValueChange={([value]) =>
+                    onEditChange({
+                      whiteBalance: {
+                        temperature: editState.whiteBalance?.temperature ?? 0,
+                        tint: value,
+                      },
+                    })
+                  }
+                  min={-100}
+                  max={100}
+                  step={1}
+                />
+              </div>
             </div>
           </TabsContent>
         </Tabs>
