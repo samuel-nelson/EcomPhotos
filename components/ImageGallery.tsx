@@ -66,8 +66,8 @@ export function ImageGallery() {
           return (
             <Card
               key={image.id}
-              className={`cursor-pointer transition-all ${
-                isSelected ? 'ring-2 ring-primary' : ''
+              className={`cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${
+                isSelected ? 'ring-2 ring-primary shadow-lg' : ''
               }`}
               onClick={() => {
                 if (isSelected) {
@@ -89,10 +89,11 @@ export function ImageGallery() {
                       <Check className="h-4 w-4" />
                     </div>
                   )}
-                  <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-2 left-2">
                     <Button
                       size="icon"
                       variant="secondary"
+                      className="bg-background/90 backdrop-blur-sm hover:bg-background shadow-lg"
                       onClick={(e) => {
                         e.stopPropagation();
                         setEditingImage(image);
