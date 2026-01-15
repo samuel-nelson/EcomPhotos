@@ -30,8 +30,8 @@ export interface EditState {
     tint: number;
   };
   resize?: {
-    width: number;
-    height: number;
+    width?: number;
+    height?: number;
     maintainAspectRatio: boolean;
   };
 }
