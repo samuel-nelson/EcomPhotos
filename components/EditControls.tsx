@@ -74,14 +74,16 @@ export function EditControls({ editState, onEditChange, onCrop, onReset }: EditC
                     <input
                       type="number"
                       value={editState.resize.width || ''}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const parsed = value === '' ? undefined : parseInt(value, 10);
                         onEditChange({
                           resize: {
                             ...editState.resize!,
-                            width: parseInt(e.target.value) || undefined,
+                            width: parsed !== undefined && !Number.isNaN(parsed) ? parsed : undefined,
                           },
-                        })
-                      }
+                        });
+                      }}
                       className="w-full px-2 py-1 text-sm border rounded"
                     />
                   </div>
@@ -90,14 +92,16 @@ export function EditControls({ editState, onEditChange, onCrop, onReset }: EditC
                     <input
                       type="number"
                       value={editState.resize.height || ''}
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        const parsed = value === '' ? undefined : parseInt(value, 10);
                         onEditChange({
                           resize: {
                             ...editState.resize!,
-                            height: parseInt(e.target.value) || undefined,
+                            height: parsed !== undefined && !Number.isNaN(parsed) ? parsed : undefined,
                           },
-                        })
-                      }
+                        });
+                      }}
                       className="w-full px-2 py-1 text-sm border rounded"
                     />
                   </div>
