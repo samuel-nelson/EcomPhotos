@@ -33,6 +33,7 @@ export function PhotoRoomControls({ image, onProcessed }: PhotoRoomControlsProps
       }
 
       const result = await response.json();
+      console.log('PhotoRoom API result:', result);
       
       if (result.result_url) {
         onProcessed(result.result_url);
@@ -43,9 +44,12 @@ export function PhotoRoomControls({ image, onProcessed }: PhotoRoomControlsProps
       } else if (result.job_id) {
         // Poll for job completion
         pollJobStatus(result.job_id, onProcessed);
+      } else {
+        throw new Error(result.error || 'No result returned from API');
       }
     } catch (err: any) {
-      setError(err.message || 'Processing failed');
+      const errorMessage = err.message || err.error || 'Processing failed';
+      setError(errorMessage);
       console.error('PhotoRoom processing error:', err);
     } finally {
       setProcessing(null);
@@ -152,14 +156,14 @@ export function PhotoRoomControls({ image, onProcessed }: PhotoRoomControlsProps
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5" />
+    <Card className="border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Sparkles className="h-5 w-5 text-primary" />
           PhotoRoom AI
         </CardTitle>
         <CardDescription>
-          AI-powered image processing
+          Professional AI-powered image processing
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -167,8 +171,8 @@ export function PhotoRoomControls({ image, onProcessed }: PhotoRoomControlsProps
           <Button
             onClick={handleBackgroundRemove}
             disabled={!!processing}
-            variant="outline"
-            className="w-full"
+            variant="default"
+            className="w-full bg-primary hover:bg-primary/90"
           >
             {processing === 'background-remove' ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -181,8 +185,8 @@ export function PhotoRoomControls({ image, onProcessed }: PhotoRoomControlsProps
           <Button
             onClick={handlePhotoFix}
             disabled={!!processing}
-            variant="outline"
-            className="w-full"
+            variant="default"
+            className="w-full bg-primary hover:bg-primary/90"
           >
             {processing === 'photofix' ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -195,8 +199,8 @@ export function PhotoRoomControls({ image, onProcessed }: PhotoRoomControlsProps
           <Button
             onClick={handleReposition}
             disabled={!!processing}
-            variant="outline"
-            className="w-full"
+            variant="default"
+            className="w-full bg-primary hover:bg-primary/90"
           >
             {processing === 'reposition' ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -209,8 +213,8 @@ export function PhotoRoomControls({ image, onProcessed }: PhotoRoomControlsProps
           <Button
             onClick={handleBeautify}
             disabled={!!processing}
-            variant="outline"
-            className="w-full"
+            variant="default"
+            className="w-full bg-primary hover:bg-primary/90"
           >
             {processing === 'beautify' ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -221,31 +225,33 @@ export function PhotoRoomControls({ image, onProcessed }: PhotoRoomControlsProps
           </Button>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2 p-3 bg-muted/50 rounded-lg border border-primary/10">
+          <label className="text-sm font-medium">AI Background Generator</label>
           <Input
-            placeholder="AI background prompt (e.g., 'white background', 'outdoor scene')"
+            placeholder="e.g., 'white background', 'outdoor scene', 'studio lighting'"
             value={aiPrompt}
             onChange={(e) => setAiPrompt(e.target.value)}
+            className="bg-background"
           />
           <Button
             onClick={handleAIBackground}
-            disabled={!!processing}
-            variant="outline"
-            className="w-full"
+            disabled={!!processing || !aiPrompt.trim()}
+            variant="default"
+            className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
           >
             {processing === 'ai-background' ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : (
               <Sparkles className="h-4 w-4 mr-2" />
             )}
-            AI Background
+            Generate AI Background
           </Button>
         </div>
 
         <Button
           onClick={handleAnalyzeQA}
           disabled={!!processing}
-          variant="outline"
+          variant="secondary"
           className="w-full"
         >
           {processing === 'analyze-qa' ? (
@@ -253,7 +259,7 @@ export function PhotoRoomControls({ image, onProcessed }: PhotoRoomControlsProps
           ) : (
             <CheckCircle2 className="h-4 w-4 mr-2" />
           )}
-          Analyze QA
+          Analyze Image Quality
         </Button>
 
         {error && (
