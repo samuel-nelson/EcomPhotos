@@ -195,10 +195,8 @@ let clientInstance: PhotoRoomClient | null = null;
 
 export function getPhotoRoomClient(): PhotoRoomClient {
   if (!clientInstance) {
-    const apiKey = process.env.PHOTOROOM_API_KEY;
-    if (!apiKey) {
-      throw new Error('PHOTOROOM_API_KEY is not set');
-    }
+    // Use environment variable if set, otherwise use the default sandbox key
+    const apiKey = process.env.PHOTOROOM_API_KEY || 'sandbox_sk_pr_default_75c6297a874dad0b47cbc72b63ea050732686413';
     clientInstance = new PhotoRoomClient(apiKey);
   }
   return clientInstance;
