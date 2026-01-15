@@ -9,7 +9,7 @@ import {
   AnalyzeQAResponse,
 } from './types';
 
-const PHOTOROOM_API_BASE = 'https://sdk.photoroom.com/v1';
+const PHOTOROOM_API_BASE = 'https://sdk.photoroom.com/v1/segment';
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
@@ -40,24 +40,41 @@ class PhotoRoomClient {
     formData: FormData
   ): Promise<PhotoRoomApiResponse> {
     return this.retryRequest(async () => {
-      const response = await fetch(`${PHOTOROOM_API_BASE}${endpoint}`, {
+      const url = `${PHOTOROOM_API_BASE}${endpoint}`;
+      console.log('PhotoRoom API Request:', url);
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'x-api-key': this.apiKey,
+          'X-API-Key': this.apiKey,
         },
         body: formData,
       });
 
+      const responseText = await response.text();
+      console.log('PhotoRoom API Response Status:', response.status);
+      console.log('PhotoRoom API Response:', responseText.substring(0, 200));
+
       if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
+        let error: any = {};
+        try {
+          error = JSON.parse(responseText);
+        } catch {
+          error = { message: responseText || response.statusText };
+        }
         throw {
           status: response.status,
-          message: error.message || response.statusText,
+          message: error.message || error.error || response.statusText,
           ...error,
         };
       }
 
-      return response.json();
+      try {
+        return JSON.parse(responseText);
+      } catch {
+        // If response is not JSON, might be base64 image
+        return { result_b64: responseText };
+      }
     });
   }
 
@@ -96,7 +113,7 @@ class PhotoRoomClient {
       position: request.position,
     });
 
-    return this.makeRequest('/segment', formData);
+    return this.makeRequest('', formData);
   }
 
   async generateAIBackground(
@@ -109,7 +126,7 @@ class PhotoRoomClient {
       scale: request.scale,
     });
 
-    return this.makeRequest('/segment', formData);
+    return this.makeRequest('', formData);
   }
 
   async photoFix(request: PhotoFixRequest): Promise<PhotoRoomApiResponse> {
@@ -120,7 +137,7 @@ class PhotoRoomClient {
       format: request.format || 'png',
     });
 
-    return this.makeRequest('/segment', formData);
+    return this.makeRequest('', formData);
   }
 
   async reposition(request: RepositionRequest): Promise<PhotoRoomApiResponse> {
@@ -130,7 +147,7 @@ class PhotoRoomClient {
       format: request.format || 'png',
     });
 
-    return this.makeRequest('/segment', formData);
+    return this.makeRequest('', formData);
   }
 
   async beautifyProduct(
@@ -140,17 +157,17 @@ class PhotoRoomClient {
       format: request.format || 'png',
     });
 
-    return this.makeRequest('/segment', formData);
+    return this.makeRequest('', formData);
   }
 
   async analyzeQA(request: AnalyzeQARequest): Promise<AnalyzeQAResponse> {
     const formData = this.createFormData(request.image_file, request.image_url);
     
     return this.retryRequest(async () => {
-      const response = await fetch(`${PHOTOROOM_API_BASE}/segment`, {
+      const response = await fetch(`${PHOTOROOM_API_BASE}`, {
         method: 'POST',
         headers: {
-          'x-api-key': this.apiKey,
+          'X-API-Key': this.apiKey,
         },
         body: formData,
       });
@@ -170,10 +187,10 @@ class PhotoRoomClient {
 
   async checkJobStatus(jobId: string): Promise<PhotoRoomApiResponse> {
     return this.retryRequest(async () => {
-      const response = await fetch(`${PHOTOROOM_API_BASE}/segment/${jobId}`, {
+      const response = await fetch(`${PHOTOROOM_API_BASE}/${jobId}`, {
         method: 'GET',
         headers: {
-          'x-api-key': this.apiKey,
+          'X-API-Key': this.apiKey,
         },
       });
 
