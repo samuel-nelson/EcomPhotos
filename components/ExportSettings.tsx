@@ -134,15 +134,17 @@ export function ExportSettings() {
                 type="number"
                 placeholder="Width"
                 value={exportSettings.dimensions?.width || ''}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const parsed = value === '' ? undefined : parseInt(value, 10);
                   updateExportSettings({
                     dimensions: {
                       ...exportSettings.dimensions,
-                      width: parseInt(e.target.value) || undefined,
+                      width: parsed !== undefined && !Number.isNaN(parsed) ? parsed : undefined,
                       maintainAspectRatio: exportSettings.dimensions?.maintainAspectRatio || true,
                     },
-                  })
-                }
+                  });
+                }}
               />
             </div>
             <div>
@@ -150,15 +152,17 @@ export function ExportSettings() {
                 type="number"
                 placeholder="Height"
                 value={exportSettings.dimensions?.height || ''}
-                onChange={(e) =>
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const parsed = value === '' ? undefined : parseInt(value, 10);
                   updateExportSettings({
                     dimensions: {
                       ...exportSettings.dimensions,
-                      height: parseInt(e.target.value) || undefined,
+                      height: parsed !== undefined && !Number.isNaN(parsed) ? parsed : undefined,
                       maintainAspectRatio: exportSettings.dimensions?.maintainAspectRatio || true,
                     },
-                  })
-                }
+                  });
+                }}
               />
             </div>
           </div>
