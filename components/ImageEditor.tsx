@@ -211,18 +211,24 @@ export function ImageEditor({ image, onUpdate, onClose }: ImageEditorProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">{image.name}</h3>
+        <Card className="shadow-lg">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-xl font-bold">{image.name}</h3>
+                {image.sku && (
+                  <p className="text-sm text-muted-foreground mt-1">SKU: {image.sku}</p>
+                )}
+              </div>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={handleUndo}
                   disabled={historyIndex <= 0}
+                  title="Undo"
                 >
                   <Undo2 className="h-4 w-4" />
                 </Button>
@@ -231,12 +237,14 @@ export function ImageEditor({ image, onUpdate, onClose }: ImageEditorProps) {
                   size="icon"
                   onClick={handleRedo}
                   disabled={historyIndex >= history.length - 1}
+                  title="Redo"
                 >
                   <Redo2 className="h-4 w-4" />
                 </Button>
                 <Button
                   onClick={handleExport}
                   disabled={isProcessing}
+                  className="bg-primary hover:bg-primary/90"
                 >
                   {isProcessing ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -247,15 +255,18 @@ export function ImageEditor({ image, onUpdate, onClose }: ImageEditorProps) {
                 </Button>
               </div>
             </div>
-            <div className="relative bg-muted rounded-lg overflow-hidden">
+            <div className="relative bg-gradient-to-br from-muted to-muted/50 rounded-xl overflow-hidden border-2 border-border shadow-inner">
               <canvas
                 ref={canvasRef}
-                className="max-w-full h-auto"
+                className="max-w-full h-auto mx-auto block"
                 style={{ display: 'block' }}
               />
               {isProcessing && (
-                <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <div className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center rounded-xl">
+                  <div className="text-center">
+                    <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">Processing...</p>
+                  </div>
                 </div>
               )}
             </div>
@@ -263,16 +274,7 @@ export function ImageEditor({ image, onUpdate, onClose }: ImageEditorProps) {
         </Card>
       </div>
 
-      <div className="space-y-4">
-        <EditControls
-          editState={editState}
-          onEditChange={(updates) => setEditState({ ...editState, ...updates })}
-          onCrop={handleCrop}
-          onReset={() => {
-            setEditState({});
-            loadImage();
-          }}
-        />
+      <div className="space-y-6">
         <PhotoRoomControls
           image={image}
           onProcessed={(processedUrl) => {
@@ -292,6 +294,15 @@ export function ImageEditor({ image, onUpdate, onClose }: ImageEditorProps) {
               }
             };
             img.src = processedUrl;
+          }}
+        />
+        <EditControls
+          editState={editState}
+          onEditChange={(updates) => setEditState({ ...editState, ...updates })}
+          onCrop={handleCrop}
+          onReset={() => {
+            setEditState({});
+            loadImage();
           }}
         />
       </div>
