@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const client = new GoogleDriveClient(accessToken);
     const fileBuffer = await client.downloadFile(fileId);
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(new Uint8Array(fileBuffer), {
       headers: {
         'Content-Type': 'application/octet-stream',
       },
