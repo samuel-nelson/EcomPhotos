@@ -78,7 +78,18 @@ export function ImageEditor({ image, onUpdate, onClose }: ImageEditorProps) {
 
     setIsProcessing(true);
     const canvas = canvasRef.current;
-    let processedImage: HTMLCanvasElement = imageRef.current;
+    const sourceImage = imageRef.current;
+    
+    // Convert image to canvas - imageRef.current is always HTMLImageElement
+    // Create a temporary canvas from the image
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = sourceImage.naturalWidth || sourceImage.width;
+    tempCanvas.height = sourceImage.naturalHeight || sourceImage.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    if (tempCtx) {
+      tempCtx.drawImage(sourceImage, 0, 0);
+    }
+    let processedImage: HTMLCanvasElement = tempCanvas;
 
     // Apply crop first if in crop mode
     if (isCropMode && cropArea) {
